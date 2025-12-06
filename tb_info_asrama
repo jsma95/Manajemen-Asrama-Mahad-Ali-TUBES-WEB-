@@ -1,0 +1,65 @@
+<?php
+// tb_info_asrama.php
+// Jalankan sekali untuk membuat tabel tb_info_asrama dan isi data awal
+
+$host = "localhost";
+$user = "root";
+$pass = "";
+$db   = "db_asrama";
+
+$koneksi = mysqli_connect($host, $user, $pass, $db);
+if (!$koneksi) {
+    die("Koneksi gagal: " . mysqli_connect_error());
+}
+
+$sql_table = " CREATE TABLE IF NOT EXISTS tb_info_asrama (
+    id_info INT AUTO_INCREMENT PRIMARY KEY,
+    judul VARCHAR(150) NOT NULL,
+    isi   TEXT NOT NULL,
+    tanggal_update DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+";
+
+if (!mysqli_query($koneksi, $sql_table)) {
+    die("Gagal membuat tabel: " . mysqli_error($koneksi));
+}
+
+// 2. Cek apakah sudah ada data
+$cek = mysqli_query($koneksi, "SELECT COUNT(*) AS total FROM tb_info_asrama");
+$row = mysqli_fetch_assoc($cek);
+
+if ((int)$row['total'] === 0) {
+    // 3. Insert data awal jika tabel masih kosong
+    $sql_insert = "INSERT INTO tb_info_asrama (judul, isi) VALUES(
+            'Tentang Asrama Ma''had Aly',
+            'Asrama Ma''had Aly UIN Alauddin Makassar menyediakan lingkungan tinggal yang religius, disiplin, dan kondusif untuk belajar. Penghuni mendapatkan pembinaan rutin, fasilitas memadai, dan keamanan 24 jam.'),
+        (
+            'Fasilitas Asrama',
+            '• Kamar tidur (2-4 orang per kamar)
+            • Kasur, lemari, meja belajar
+            • Wifi 24 jam
+            • Kamar mandi dalam / luar
+            • Ruang belajar bersama
+            • Pengawasan dan pembinaan harian'
+        ),
+        (
+            'Aturan Penghuni',
+            '1. Menjaga kebersihan kamar dan area bersama.
+            2. Mengikuti kegiatan pembinaan.
+            3. Mentaati jam malam dan tata tertib asrama.
+            4. Tidak membawa barang-barang terlarang.
+            5. Melapor jika ada kerusakan fasilitas.'
+        );
+    ";
+
+    if (!mysqli_query($koneksi, $sql_insert)) {
+        die("Gagal insert data awal: " . mysqli_error($koneksi));
+    }
+
+    echo "Tabel <b>tb_info_asrama</b> dibuat dan data awal berhasil ditambahkan.";
+} else {
+    echo "Tabel <b>tb_info_asrama</b> sudah ada dan sudah berisi data. Tidak ada insert ulang.";
+}
+
+mysqli_close($koneksi);
+?>
